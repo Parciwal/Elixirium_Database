@@ -1,0 +1,18 @@
+[project]
+name = "alchdb"
+version = "1.0.0"
+description = ""
+authors = [
+    {name = "Parciwal",email = "parciwal2@gmail.com"}
+]
+readme = "README.md"
+
+[tool.poetry.scripts]
+alchdb = "alchdb.main:main"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

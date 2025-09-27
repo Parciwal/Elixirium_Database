@@ -1,0 +1,10 @@
+.venv/
+*.db
+*.pyc
+json/
+.vscode/
+*cache*/
+a/
+*.Identifier
+result.txt
+discovered.txt

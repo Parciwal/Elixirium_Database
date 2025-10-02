@@ -27,7 +27,7 @@ def main():
             )
         
         case "init":
-            if os.path.exists(pathlib.Path(__file__).parent.resolve().joinpath('ingredients.db')):
+            if os.path.exists(pathlib.Path(__file__).parent.resolve().joinpath('ingredients.db')): #path wehre file is, workingdir is inconsistent
                 os.remove(pathlib.Path(__file__).parent.resolve().joinpath('ingredients.db'))
             connect.create_tables()
             connect.import_effects()
@@ -92,7 +92,7 @@ def main():
                 )
             else:
                 try:
-                    with sqlite3.connect('ingredients.db') as conn:
+                    with sqlite3.connect(pathlib.Path(__file__).parent.resolve().joinpath('ingredients.db')) as conn:
                         add_stuff.add_affix(
                             conn,
                             args._affix_name
@@ -128,7 +128,7 @@ parser_modify_effect = subparsers.add_parser("effect",help="modify effect")
 
 parser_modify_effect.add_argument("-efn","--_effect_name",required=True,type=str)
 effect_change = parser_modify_effect.add_mutually_exclusive_group(required=True)
-effect_change.add_argument("-c","--_effect_category",default="",type=str)
+effect_change.add_argument("-c","--_effect_category",default="",type=str,help="when given and efect doesn't exist: create new effect with this category")
 effect_change.add_argument("-de","--delete_effect",help="delete effect",action="store_true")
 effect_change.add_argument("-r","--_effect_rename",default="",type=str)
 

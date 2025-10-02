@@ -41,8 +41,11 @@ def create_tables():
         with sqlite3.connect(pathlib.Path(__file__).parent.resolve().joinpath('ingredients.db')) as conn:
             print(f"Opened database at {pathlib.Path(__file__).parent.resolve().joinpath('ingredients.db')}")
             cursor = conn.cursor()
+
+            # make tables from global var
             for statement in sql_statements:
                 cursor.execute(statement)
+            
             conn.commit()
             print("Tables created successfully.")
     except sqlite3.OperationalError as e:
@@ -50,6 +53,7 @@ def create_tables():
 
 def import_effects():
     try:
+        #add all vanilla effects in the essences list
         with sqlite3.connect(pathlib.Path(__file__).parent.resolve().joinpath('ingredients.db')) as conn:
             add_stuff.add_effect(conn,("Absorbtion","pos"))
             add_stuff.add_effect(conn,("Blindness","neg"))
@@ -87,6 +91,8 @@ def import_effects():
         print(e)
 
 def insert_test_vals():
+
+    # for testing if db works
     add_stuff.add_elements("kohle",["Regeneration","Luck"],[12,8],None,None,False)
     add_stuff.add_elements("eisen",["Nausea","Invisibility"],[5,15],None,None,False)
     add_stuff.add_elements("gold",["Instant_Damage","Shrink"],[10,1],None,None,False)

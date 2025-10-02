@@ -6,7 +6,7 @@ def modify_item(item_name,effect_name,item_strength,affix_strength,new_name,dele
     try:
         with sqlite3.connect(pathlib.Path(__file__).parent.resolve().joinpath('ingredients.db')) as conn:
             cur = conn.cursor()
-            if delete and effect_name != ".*":
+            if delete and effect_name != ".*": #delete effect from item
                 sql = f"""
                     SELECT item_effect.item_id,item_effect.effect_id 
                     FROM (item_effect
@@ -26,7 +26,7 @@ def modify_item(item_name,effect_name,item_strength,affix_strength,new_name,dele
                     cur.execute(sql,row)
                 conn.commit()
                 return
-            if delete:
+            if delete: #delete item with all effects and affixes
                 sql = f"""
                     SELECT item_effect.item_id
                     FROM item_effect
@@ -55,7 +55,7 @@ def modify_item(item_name,effect_name,item_strength,affix_strength,new_name,dele
                 cur.execute(sql,[item_name])
                 conn.commit()
                 return
-            if new_name != "":
+            if new_name != "": #rename
                 sql = f"""
                 UPDATE items
                 SET items_name = ?
@@ -65,6 +65,8 @@ def modify_item(item_name,effect_name,item_strength,affix_strength,new_name,dele
                 print(f"{cur.rowcount} rows affected")
                 conn.commit()
                 return
+            
+            # if none of the above: add effect or affix
             cur.execute(f"SELECT items_id FROM items WHERE items_name='{item_name}' ")
             rows = cur.fetchall()
             for row in rows:

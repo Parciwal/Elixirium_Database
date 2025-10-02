@@ -7,13 +7,8 @@ def get_stuff(sorting,inverted,effect:str,item_name,affix,excluded_effect,catego
     try:
         with sqlite3.connect(pathlib.Path(__file__).parent.resolve().joinpath('ingredients.db')) as conn:
             cur = conn.cursor()
-            # if (effect == ".*") and (item_name == ".*") and (affix == ".*") and (excluded_effect == "none"):
-            #     get_all(sorting,inverted,cur)
-            # else:
             item_list = get_item_list_with_one_effect(cur,category,exclude_category,item_id)
-            # for item in item_list:
-            #     print(item)
-            if item_name != ".*":
+            if item_name != ".*": #avoids problems
                 item_list = filter_by_item(item_list,item_name)
             if affix != ".*":
                 item_list = filter_by_affix(item_list,affix)
@@ -29,58 +24,17 @@ def get_stuff(sorting,inverted,effect:str,item_name,affix,excluded_effect,catego
     except sqlite3.Error as e:
         print(e)
 
-def get_all(sorting,inverted,cur:sqlite3.Cursor) -> None:
-    if inverted:
-        sort_order = "DESC"
-    else:
-        sort_order = "ASC"
-    cur.execute(
-        f"""WITH ranked AS (
-            SELECT
-                items.items_id,
-                items.items_name,
-                e.effect_name,
-                ie.effect_strength,
-                ROW_NUMBER() OVER (
-                    PARTITION BY items.items_id
-                    ORDER BY ie.effect_strength DESC, ie.effect_id
-                ) AS rn
-            FROM items
-            LEFT JOIN item_effect AS ie ON ie.item_id = items.items_id
-            LEFT JOIN effects AS e ON e.effect_id = ie.effect_id
-            )
-            SELECT
-            items.items_name,
-            MAX(CASE WHEN r.rn = 1 THEN r.effect_name     END) AS effect_1,
-            MAX(CASE WHEN r.rn = 1 THEN r.effect_strength END) AS effect_strength_1,
-            MAX(CASE WHEN r.rn = 2 THEN r.effect_name     END) AS effect_2,
-            MAX(CASE WHEN r.rn = 2 THEN r.effect_strength END) AS effect_strength_2,
-            MAX(CASE WHEN r.rn = 3 THEN r.effect_name     END) AS effect_3,
-            MAX(CASE WHEN r.rn = 3 THEN r.effect_strength END) AS effect_strength_3,
-            a.affix_name,
-            ia.affix_strength
-            FROM items
-            LEFT JOIN ranked AS r ON r.items_id = items.items_id
-            LEFT JOIN item_affix AS ia ON ia.item_id = items.items_id
-            LEFT JOIN affix AS a ON a.affix_id = ia.affix_id
-            GROUP BY
-            items.items_name, a.affix_name, ia.affix_strength
-            ORDER BY {sorting} {sort_order}
-        """
-    )
-    #cur.execute("SELECT * FROM affix")
-    rows = cur.fetchall()
-    # for row in rows:
-    #     print(f"{row}")
-
 def get_item_list_with_one_effect(cur:sqlite3.Cursor,category,exclude_category,item_id) -> list[Any]:
     where = ""
+
+    # for filters that need to be in sql
     if category != "":
         where = f"WHERE effects.category == '{category}'"
     if exclude_category != "":
         where = f"WHERE effects.category != '{exclude_category}'"
     if item_id != 0:
         where = f"WHERE items.items_id == '{item_id}'"
+    
     sql = f"""
         SELECT items.items_name, effects.effect_name, item_effect.effect_strength,affix.affix_name,item_affix.affix_strength
         FROM (((items
@@ -93,14 +47,13 @@ def get_item_list_with_one_effect(cur:sqlite3.Cursor,category,exclude_category,i
         """
     cur.execute(sql)
     rows = cur.fetchall()
-    # for row in rows:
-    #     print(f"{row}")
     return rows
 
 def filter_by_item(item_list,item_name) -> list[Any]:
     result = []
     p = re.compile(item_name, re.IGNORECASE)
 
+    # only add items with right name, name in slot 0
     for item in item_list:
         if p.match(item[0]):
             result += [item]
@@ -109,6 +62,8 @@ def filter_by_item(item_list,item_name) -> list[Any]:
 def filter_by_affix(item_list,affix) -> list[Any]:
     result = []
     p = re.compile(affix, re.IGNORECASE)
+
+    #only add items with right affix, affix name in slot 3
     for item in item_list:
         if item[3] and p.match(item[3]):
             result += [item]
@@ -118,9 +73,15 @@ def filter_by_effect(item_list,effect) -> list[Any]:
     result = []
     p = re.compile(effect, re.IGNORECASE)
     name: set = set(())
+
+    #only add items with right effect, effect name in slot 1
+
+    # put correct effect first
     for item in item_list:
         if item[1] and p.match(item[1]):
             name.add(item[0])
+    
+    # put the rest behind
     for item in item_list:
         if item[0] in name:
             result += [item]

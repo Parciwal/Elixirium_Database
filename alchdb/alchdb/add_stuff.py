@@ -3,6 +3,7 @@ from alchdb import modify
 import pathlib
 id = 10
 
+# An itereator that repeatedly returns the intiially given id
 class Id_iterator():
     def __init__(self,id):
         self.id = id
@@ -15,9 +16,11 @@ class Id_iterator():
 
 def add_elements(item_name:str,effect_names:list[str],effect_strengths:list[int],affix_name:str,affix_strength:int,override):
     try:
-        with sqlite3.connect(pathlib.Path(__file__).parent.resolve().joinpath('ingredients.db')) as conn:
+        with sqlite3.connect(pathlib.Path(__file__).parent.resolve().joinpath('ingredients.db')) as conn: #path of curent file, path of working directory is inconsistent
             # add  a item
             cur = conn.cursor()
+
+            # duplicate check
             cur.execute(f"SELECT items_id FROM items WHERE items_name='{item_name}' ")
             rows = cur.fetchone()
             if rows:
@@ -27,9 +30,11 @@ def add_elements(item_name:str,effect_names:list[str],effect_strengths:list[int]
             
             item_id = add_item(conn, item_name)
             item_id_iter = Id_iterator(item_id)
+
             print(f'Created a item with the id {item_id}')
             print()
-            # add effects to the item 
+
+            # add effects to the item, zip makes the needed tuples
             for effect in zip(item_id_iter,effect_names,effect_strengths):
                 add_item_effect(conn, effect)
 
@@ -39,6 +44,8 @@ def add_elements(item_name:str,effect_names:list[str],effect_strengths:list[int]
 
             elif (affix_name) or (affix_strength):
                 print("affix invalid")
+
+            #onl commit to avoid half baked items
             conn.commit()
     except sqlite3.Error as e:
         print(e)
@@ -58,14 +65,20 @@ def add_item(conn, item):
 
 def add_item_effect(conn,effect):
     cur = conn.cursor()
+
+    # get effect id for later
     sql_get = """SELECT effects.effect_id
                 FROM effects
                 WHERE effects.effect_name LIKE ? COLLATE NOCASE"""
 
     cur.execute(sql_get,[effect[1]])
     effect_id = cur.fetchall()
+
+    # check if given name actually only fits one effect
     if len(effect_id) > 1:
         raise LookupError(f"effect name {effect[1]} not specific enough, item creation aborted")
+    
+    #make new conenction betwwen item and effect
     sql_add = '''INSERT INTO item_effect(item_id,effect_id,effect_strength)
              VALUES(?,?,?)'''
     if effect_id:
@@ -102,9 +115,14 @@ def add_item_affix(conn,affix):
 
     affix_id = cur.execute(sql_get,[affix[1]])
     affix_id = cur.fetchall()
+    
+    # only match one affix
     if len(affix_id) > 1:
         raise LookupError(f"affix name {affix[1]} not specific enough, item creation aborted")
+    
+    #check if affix id exists
     if not affix_id:
+        # avoid adding false affix
         if not "%" in affix[1]:
             affix_id = [[add_affix(conn,affix[1])]]
         else:

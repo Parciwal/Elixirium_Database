@@ -4,13 +4,15 @@ import pathlib
 
 def del_effect(name):
     try:
-        with sqlite3.connect(pathlib.Path(__file__).parent.resolve().joinpath('ingredients.db')) as conn:
+        with sqlite3.connect(pathlib.Path(__file__).parent.resolve().joinpath('ingredients.db')) as conn: #path of curent file, path of working directory is inconsistent
             cur = conn.cursor()
             sql = f"""
             DELETE FROM effects
             WHERE effect_name = ?;
             """
             cur.execute(sql,[name])
+
+            # feedback is important
             print(f"{cur.rowcount} rows affected")
             conn.commit()
     except sqlite3.Error as e:
@@ -18,7 +20,7 @@ def del_effect(name):
 
 def change_or_add_effect(name,category):
     try:
-        with sqlite3.connect(pathlib.Path(__file__).parent.resolve().joinpath('ingredients.db')) as conn:
+        with sqlite3.connect(pathlib.Path(__file__).parent.resolve().joinpath('ingredients.db')) as conn: #path of curent file, path of working directory is inconsistent
             cur = conn.cursor()
             sql = f"""
             SELECT effect_id FROM effects
@@ -26,6 +28,8 @@ def change_or_add_effect(name,category):
             """
             cur.execute(sql,[name])
             row = cur.fetchone()
+
+            # checks if efect exists, if not, adds it
             if row:
                 update_effect(cur,row[0],category)
             else:
@@ -41,17 +45,21 @@ def update_effect(cur,id,category):
             WHERE effect_name = ?;
             """
     cur.execute(sql,[id,category])
+
+    # feedback is important
     print(f"{cur.rowcount} rows affected")
 
 def del_affix(name):
     try:
-        with sqlite3.connect(pathlib.Path(__file__).parent.resolve().joinpath('ingredients.db')) as conn:
+        with sqlite3.connect(pathlib.Path(__file__).parent.resolve().joinpath('ingredients.db')) as conn: #path of curent file, path of working directory is inconsistent
             cur = conn.cursor()
             sql = f"""
             DELETE FROM affix
             WHERE affix_name = ?;
             """
             cur.execute(sql,[name])
+
+            # feedback is important
             print(f"{cur.rowcount} rows affected")
             conn.commit()
     except sqlite3.Error as e:
@@ -59,7 +67,7 @@ def del_affix(name):
 
 def rename_effect(name,new_name):
     try:
-        with sqlite3.connect(pathlib.Path(__file__).parent.resolve().joinpath('ingredients.db')) as conn:
+        with sqlite3.connect(pathlib.Path(__file__).parent.resolve().joinpath('ingredients.db')) as conn: #path of curent file, path of working directory is inconsistent
             cur = conn.cursor()
             
             sql = f"""
@@ -68,6 +76,8 @@ def rename_effect(name,new_name):
                 WHERE effect_name = ?;
                 """
             cur.execute(sql,[new_name,name])
+
+            # feedback is important
             print(f"{cur.rowcount} rows affected")
             conn.commit()
     except sqlite3.Error as e:

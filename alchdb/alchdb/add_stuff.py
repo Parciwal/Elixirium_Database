@@ -17,6 +17,7 @@ class Id_iterator():
 def add_elements(item_name:str,effect_names:list[str],effect_strengths:list[int],affix_name:str,affix_strength:int,override):
     try:
         with sqlite3.connect(pathlib.Path(__file__).parent.resolve().joinpath('ingredients.db')) as conn: #path of curent file, path of working directory is inconsistent
+            
             # add  a item
             cur = conn.cursor()
 

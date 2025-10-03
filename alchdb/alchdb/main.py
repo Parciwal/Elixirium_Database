@@ -16,7 +16,7 @@ def main():
                 backup.save(args.backup_name)
             else:
                 backup.load(args.backup_name)
-        case "insert":
+        case "add":
             add_stuff.add_elements(
                 args.item_name,
                 args.effect_names.split(","),

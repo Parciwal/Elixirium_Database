@@ -35,7 +35,7 @@ Now we have the comandline prepared, next unpack the distribution into the folde
 
 As the last step, run the install command:
 
-`pip install alchdb-1.0.1-py3-none-any.whl`
+`pip install alchdb-1.0.3-py3-none-any.whl`
 
 If you put the files somewhere else, you need the path to the .whl file.
 
@@ -54,11 +54,11 @@ Use `alchdb backup -h`for more info.
 
 To add an item, simply use the add command, here an Example:
 
-`alchdb add -n Bowl -en fir%,wat% -es 19,9 -an %pre% -as 12`
+`alchdb add -i Bowl -en fir%,wat% -es 19,9 -an %pre% -as 12`
 
 Explanation:
 
-`-n` 
+`-i` 
 
 The name of your item. Any string will do, but it is recommended to replace spaces with underscores (_) to make typing easier. If you still want spaces, encase your name in quotationmarks.
 

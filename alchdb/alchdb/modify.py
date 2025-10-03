@@ -57,6 +57,16 @@ def modify_item(item_name,effect_name,item_strength,affix_strength,new_name,dele
                 return
             if new_name != "": #rename
                 sql = f"""
+                SELECT items.items_id
+                FROM items
+                WHERE items_name = ?;
+                """
+                cur.execute(sql,[new_name])
+                exist = cur.fetchall()
+                if exist:
+                    raise ValueError(f"{new_name} already exists")
+
+                sql = f"""
                 UPDATE items
                 SET items_name = ?
                 WHERE items_name = ?;

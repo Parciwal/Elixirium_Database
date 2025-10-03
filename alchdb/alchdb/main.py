@@ -117,7 +117,7 @@ parser_backup.add_argument("backup_name",type=str,nargs='?',help="name of backup
 
 
 parser_insert = subparsers.add_parser("add",help="add item")
-parser_insert.add_argument("-n","--item_name",help="name of item to be added",required=True,type=str)
+parser_insert.add_argument("-i","--item_name",help="name of item to be added",required=True,type=str)
 parser_insert.add_argument("-en","--effect_names",required=True,type=str,help="effect names split by a comma")
 parser_insert.add_argument("-es","--effect_strengths",required=True,type=str,help="effect strengths split by a comma")
 parser_insert.add_argument("-an","--affix_name",default=None,type=str,help="affix name to be used, if not existent, will add. Use %% to allow any amount of any character")
@@ -129,26 +129,26 @@ parser_modify_effect = subparsers.add_parser("effect",help="modify effect")
 parser_modify_effect.add_argument("-efn","--_effect_name",required=True,type=str)
 effect_change = parser_modify_effect.add_mutually_exclusive_group(required=True)
 effect_change.add_argument("-c","--_effect_category",default="",type=str,help="when given and efect doesn't exist: create new effect with this category")
-effect_change.add_argument("-de","--delete_effect",help="delete effect",action="store_true")
+effect_change.add_argument("-d","--delete_effect",help="delete effect",action="store_true")
 effect_change.add_argument("-r","--_effect_rename",default="",type=str)
 
 
 parser_modify_affix = subparsers.add_parser("affix",help="modify affix")
 
-parser_modify_affix.add_argument("-afn","--_affix_name",required=True,type=str)
-parser_modify_affix.add_argument("-da","--delete_affix",help="delete affix",action="store_true")
+parser_modify_affix.add_argument("-a","--_affix_name",required=True,type=str)
+parser_modify_affix.add_argument("-d","--delete_affix",help="delete affix",action="store_true")
 
 
 parser_modify_item = subparsers.add_parser("modify",help="modify item")
 
-parser_modify_item.add_argument("-in","--item_name_",required=True,type=str)
-parser_modify_item.add_argument("-eaf","--effect_or_affix_name_",default=".*",type=str)
+parser_modify_item.add_argument("-i","--item_name_",required=True,type=str)
+parser_modify_item.add_argument("-n","--effect_or_affix_name_",default=".*",type=str)
 
 change = parser_modify_item.add_mutually_exclusive_group(required=True)
-change.add_argument("-a","--add_effect",help="add effect with strength",type=int,default=0)
-change.add_argument("-adf","--add_aff",help="add affix with strength",type=int,default=0)
+change.add_argument("-ae","--add_effect",help="add effect with strength",type=int,default=0)
+change.add_argument("-af","--add_aff",help="add affix with strength",type=int,default=0)
 change.add_argument("-d","--delete",help="delete effect for item",action="store_true")
-change.add_argument("-re","--rename_item",help="new name for item",default="",type=str)
+change.add_argument("-r","--rename_item",help="new name for item",default="",type=str)
 
 
 parser_get = subparsers.add_parser("get",help="get item") #filter
@@ -166,9 +166,9 @@ parser_get.add_argument("-id","--item_id",help="onle get item with this id",type
 
 parser_sorting = parser_get.add_mutually_exclusive_group() #wonach sortiert werden soll
 parser_sorting.add_argument("-s","--strength",help="sort by effect strength",action="store_true")
-parser_sorting.add_argument("-na","--name_affix",help="sort by affix",action="store_true")
+parser_sorting.add_argument("-an","--name_affix",help="sort by affix name",action="store_true")
 parser_sorting.add_argument("-as","--affix_strength",help="sort by affix strength",action="store_true")
-parser_sorting.add_argument("-ne","--name_effect",help="sort by effect",action="store_true")
+parser_sorting.add_argument("-en","--name_effect",help="sort by effect name",action="store_true")
 
 parser_get.add_argument("-in","--inverted",help="invert_sorting",action="store_true")
 

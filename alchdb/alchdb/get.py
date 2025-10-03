@@ -29,12 +29,14 @@ def get_item_list_with_one_effect(cur:sqlite3.Cursor,category,exclude_category,i
 
     # for filters that need to be in sql
     if category != "":
-        where = f"WHERE effects.category == '{category}'"
+        names = get_items_without_category(cur,category)
+        where = f"WHERE items.items_name NOT IN {names}"
     if exclude_category != "":
-        where = f"WHERE effects.category != '{exclude_category}'"
+        names = get_items_with_category(cur,exclude_category)
+        where = f"WHERE items.items_name NOT IN {names}'"
     if item_id != 0:
-        where = f"WHERE items.items_id == '{item_id}'"
-    
+        where = f"WHERE items.items_id NOT IN {names}"
+
     sql = f"""
         SELECT items.items_name, effects.effect_name, item_effect.effect_strength,affix.affix_name,item_affix.affix_strength
         FROM (((items
@@ -48,6 +50,39 @@ def get_item_list_with_one_effect(cur:sqlite3.Cursor,category,exclude_category,i
     cur.execute(sql)
     rows = cur.fetchall()
     return rows
+
+def get_items_without_category(cur:sqlite3.Cursor,category):
+    sql = f"""
+        SELECT items.items_name
+        FROM items
+            LEFT JOIN item_effect ON item_effect.item_id = items.items_id
+            LEFT JOIN effects ON effects.effect_id = item_effect.effect_id
+        WHERE effects.category != '{category}'
+        ORDER BY items.items_name;
+        """
+    names = set()
+    cur.execute(sql)
+    rows = cur.fetchall()
+    for name in rows:
+        names.add(name[0])
+    return tuple(names)
+
+def get_items_with_category(cur:sqlite3.Cursor,category):
+    print('getting names')
+    sql = f"""
+        SELECT items.items_name
+        FROM (items
+            LEFT JOIN item_effect ON item_effect.item_id = items.items_id)
+            LEFT JOIN effects ON effects.effect_id = item_effect.effect_id
+        WHERE effects.category = '{category}'
+        ORDER BY items.items_name;
+        """
+    names = []
+    cur.execute(sql)
+    rows = cur.fetchall()
+    for name in rows:
+        names += ["'"+name[0]+"'"]
+    return tuple(names)
 
 def filter_by_item(item_list,item_name) -> list[Any]:
     result = []

@@ -149,7 +149,7 @@ def sort_rows(rows,effect):
     p = re.compile(effect, re.IGNORECASE)
     for row in rows: #get first effect
         if row[1] and p.match(row[1]):
-            result = [row]
+            result += [row]
     
     for row in rows: #attatch rest
         if not row[1] or not p.match(row[1]):

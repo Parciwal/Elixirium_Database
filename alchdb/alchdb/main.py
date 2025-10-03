@@ -99,6 +99,8 @@ def main():
                         )
                 except sqlite3.Error as e:
                     print(e)
+        case _:
+            raise SyntaxError("unknown command")
 
 PARSER = argparse.ArgumentParser(prog="aldb",description="A database for alchemy essences")
 

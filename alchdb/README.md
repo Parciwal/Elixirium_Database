@@ -35,7 +35,7 @@ Now we have the comandline prepared, next unpack the distribution into the folde
 
 As the last step, run the install command:
 
-`pip install alchdb-1.0.3-py3-none-any.whl`
+`pip install alchdb-<version>-py3-none-any.whl`
 
 If you put the files somewhere else, you need the path to the .whl file.
 

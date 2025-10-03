@@ -9,4 +9,4 @@ a/
 result.txt
 discovered.txt
 *.zip
-*.dist/
+*dist/

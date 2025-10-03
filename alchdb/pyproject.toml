@@ -1,6 +1,6 @@
 [project]
 name = "alchdb"
-version = "1.0.3"
+version = "1.0.4"
 description = ""
 authors = [
     {name = "Parciwal",email = "parciwal2@gmail.com"}

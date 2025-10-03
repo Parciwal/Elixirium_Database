@@ -33,7 +33,7 @@ def get_item_list_with_one_effect(cur:sqlite3.Cursor,category,exclude_category,i
         where = f"WHERE items.items_name NOT IN {names}"
     if exclude_category != "":
         names = get_items_with_category(cur,exclude_category)
-        where = f"WHERE items.items_name NOT IN {names}'"
+        where = f"WHERE items.items_name NOT IN {names}"
     if item_id != 0:
         where = f"WHERE items.items_id NOT IN {names}"
 
@@ -68,7 +68,6 @@ def get_items_without_category(cur:sqlite3.Cursor,category):
     return tuple(names)
 
 def get_items_with_category(cur:sqlite3.Cursor,category):
-    print('getting names')
     sql = f"""
         SELECT items.items_name
         FROM (items
@@ -77,11 +76,11 @@ def get_items_with_category(cur:sqlite3.Cursor,category):
         WHERE effects.category = '{category}'
         ORDER BY items.items_name;
         """
-    names = []
+    names = set()
     cur.execute(sql)
     rows = cur.fetchall()
     for name in rows:
-        names += ["'"+name[0]+"'"]
+        names.add(name[0])
     return tuple(names)
 
 def filter_by_item(item_list,item_name) -> list[Any]:

@@ -12,10 +12,12 @@ def modify_item(item_name,effect_name,item_strength,affix_strength,new_name,dele
                     FROM (item_effect
                         JOIN items ON items.items_id = item_effect.item_id)
                         JOIN effects ON effects.effect_id = item_effect.effect_id 
-                    WHERE items.items_name = ?
-                    AND effects.effect_name = ?;
+                    WHERE items.items_name = ? COLLATE NOCASE
+                    AND effects.effect_name = ? COLLATE NOCASE;
                 """
                 cur.execute(sql,[item_name,effect_name])
+                
+                print(f"{cur.rowcount} rows affected")
                 rows = cur.fetchall()
                 for row in rows:
                     sql = f"""
@@ -26,7 +28,6 @@ def modify_item(item_name,effect_name,item_strength,affix_strength,new_name,dele
                     cur.execute(sql,row)
                 
                 # feedback is important
-                print(f"{cur.rowcount} rows affected")
                 conn.commit()
                 return
             if delete: #delete item with all effects and affixes
@@ -34,9 +35,10 @@ def modify_item(item_name,effect_name,item_strength,affix_strength,new_name,dele
                     SELECT item_effect.item_id
                     FROM item_effect
                         JOIN items ON items.items_id = item_effect.item_id
-                    WHERE items.items_name = ?;
+                    WHERE items.items_name = ? COLLATE NOCASE;
                 """
                 cur.execute(sql,[item_name])
+                print(f"{cur.rowcount} rows affected")
                 rows = cur.fetchall()
                 for row in rows:
                     print(row)
@@ -47,7 +49,6 @@ def modify_item(item_name,effect_name,item_strength,affix_strength,new_name,dele
                     cur.execute(sql,row)
                 
                 # feedback is important
-                print(f"{cur.rowcount} rows affected")
                 conn.commit()
                 for row in rows:
                     sql = f"""
@@ -66,7 +67,7 @@ def modify_item(item_name,effect_name,item_strength,affix_strength,new_name,dele
                 sql = f"""
                 SELECT items.items_id
                 FROM items
-                WHERE items_name = ?;
+                WHERE items_name = ? COLLATE NOCASE;
                 """
                 cur.execute(sql,[new_name])
                 exist = cur.fetchall()
@@ -75,8 +76,8 @@ def modify_item(item_name,effect_name,item_strength,affix_strength,new_name,dele
 
                 sql = f"""
                 UPDATE items
-                SET items_name = ?
-                WHERE items_name = ?;
+                SET items_name = ? COLLATE NOCASE
+                WHERE items_name = ? COLLATE NOCASE;
                 """
                 cur.execute(sql,[new_name,item_name])
                 
@@ -86,7 +87,7 @@ def modify_item(item_name,effect_name,item_strength,affix_strength,new_name,dele
                 return
             
             # if none of the above: add effect or affix
-            cur.execute(f"SELECT items_id FROM items WHERE items_name='{item_name}' ")
+            cur.execute(f"SELECT items_id FROM items WHERE items_name='{item_name}' COLLATE NOCASE ")
             rows = cur.fetchall()
             for row in rows:
                 if item_strength:

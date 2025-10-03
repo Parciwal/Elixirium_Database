@@ -113,7 +113,7 @@ def sort_list(item_list,sorting,inverted,effect) -> list[Any]:
         case "effect_name":
             item_list.sort(key=sort_by_effect_name,reverse=not(inverted))
         case _:
-            item_list.sort(key=sort_by_item_name,reverse=not(inverted))
+            item_list.sort(key=sort_by_item_name,reverse=inverted)
     return item_list
         
 def combine_list(item_list,effect) -> list[Any]:    

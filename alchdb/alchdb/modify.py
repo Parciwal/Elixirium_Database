@@ -24,6 +24,9 @@ def modify_item(item_name,effect_name,item_strength,affix_strength,new_name,dele
                     AND effect_id = ?;
                     """
                     cur.execute(sql,row)
+                
+                # feedback is important
+                print(f"{cur.rowcount} rows affected")
                 conn.commit()
                 return
             if delete: #delete item with all effects and affixes
@@ -42,6 +45,10 @@ def modify_item(item_name,effect_name,item_strength,affix_strength,new_name,dele
                         WHERE item_id = ?;
                         """
                     cur.execute(sql,row)
+                
+                # feedback is important
+                print(f"{cur.rowcount} rows affected")
+                conn.commit()
                 for row in rows:
                     sql = f"""
                         DELETE FROM item_affix
@@ -72,6 +79,8 @@ def modify_item(item_name,effect_name,item_strength,affix_strength,new_name,dele
                 WHERE items_name = ?;
                 """
                 cur.execute(sql,[new_name,item_name])
+                
+                # feedback is important
                 print(f"{cur.rowcount} rows affected")
                 conn.commit()
                 return
